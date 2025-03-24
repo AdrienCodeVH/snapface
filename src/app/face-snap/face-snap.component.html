@@ -1,5 +1,5 @@
 <div class="face-snap-card" [ngClass]="{ snapped: snaped }">
-  <h2>{{ FaceSnap.title }}</h2>
+  <h2>{{ FaceSnap.title | titlecase }}</h2>
   @if (FaceSnap.location) {
     <p>Photo prise à {{ FaceSnap.location }}</p>
   } @else {
@@ -7,7 +7,7 @@
   }
   <img [src]="FaceSnap.imageUrl" [alt]="FaceSnap.title">
   <p>{{ FaceSnap.description }}</p>
-  <p>FaceSnap créée le  {{ FaceSnap.createdAt }}</p>
+  <p>FaceSnap créée le  {{ FaceSnap.createdAt | date: 'dd MMMM yyyy, à HH:mm' }}</p>
   <button (click)="onAddSnap()">{{ snapButtonText }}</button>
   <span [ngStyle]="{ color: 'rgb(0, ' + FaceSnap.snaps + ', 0)' }">👍 {{ FaceSnap.snaps }}</span>
 </div>
