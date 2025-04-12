@@ -40,4 +40,33 @@ export class FaceSnapsService {
         }
         return foundFaceSnap;
     }
+
+    private isIdUnique(id: string): boolean {
+        return !this.faceSnaps.some(faceSnap => faceSnap.id === id);
+    }
+
+    addFaceSnap(formValue: { title: string, description: string, imageUrl: string, location?: string }): void {
+        let faceSnap: FaceSnap | undefined;
+        let isUnique = false;
+        
+        while (!isUnique) {
+            faceSnap = new FaceSnap(
+                formValue.title,
+                formValue.description,
+                new Date(),
+                0,
+                formValue.imageUrl
+            );
+            isUnique = this.isIdUnique(faceSnap.id);
+        }
+
+        if (!faceSnap) {
+            throw new Error('Impossible de créer un FaceSnap avec un ID unique');
+        }
+
+        if (formValue.location) {
+            faceSnap.withLocation(formValue.location);
+        }
+        this.faceSnaps.push(faceSnap);
+    }
 }

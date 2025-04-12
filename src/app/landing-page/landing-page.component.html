@@ -1,4 +1,9 @@
 <div class="landing-container">
-  <h1>Bienvenue sur SnapFace</h1>
-  <button (click)="onViewFaceSnaps()">Voir les FaceSnaps</button>
+  <form (ngSubmit)="onSubmit()" #emailForm="ngForm">
+    <label for="emailInput">Inscrivez-vous pour recevoir notre newsletter !</label>
+    <input type="email" id="emailInput" name="emailInput" placeholder="Votre email" [(ngModel)]="userEmail" />
+    <button type="submit">S'inscrire</button>
+  </form>
+    <h1>Bienvenue sur SnapFace</h1>
+    <button (click)="onViewFaceSnaps()">Voir les FaceSnaps</button>
 </div>
