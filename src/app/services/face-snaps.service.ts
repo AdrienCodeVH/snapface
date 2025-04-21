@@ -1,44 +1,37 @@
 import { Injectable } from "@angular/core";
 import { FaceSnap } from "../models/face-snap";
 import { SnapType } from "../models/snap-type.type";
+import { HttpClient } from "@angular/common/http";
+import { Observable, tap } from "rxjs";
 
 @Injectable({
     providedIn: 'root'
 })
 export class FaceSnapsService {
-    private faceSnaps: FaceSnap[] = [ new FaceSnap(
-        'Archibald',
-        'Mon meilleur ami depuis tout petit !',
-        new Date(),
-        0, 
-        'https://cdn.pixabay.com/photo/2015/05/31/16/03/teddy-bear-792273_1280.jpg'
-      ),
-      new FaceSnap(
-        'Tree Rock Moutain',
-        'Un beau paysage',
-        new Date(),
-        200,
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Mount_Everest_from_Druk_Air_Plane_%2824604783380%29.jpg/1280px-Mount_Everest_from_Druk_Air_Plane_%2824604783380%29.jpg',
-      ).withLocation('Bhutan')];
 
-    getAllFaceSnaps(): FaceSnap[] {
-        return [...this.faceSnaps];
+    private faceSnaps: FaceSnap[] = [];
+
+    constructor(private http: HttpClient) {}
+
+    getAllFaceSnapsFromServer(): Observable<FaceSnap[]> {
+        return this.http.get<FaceSnap[]>('http://localhost:3000/facesnaps').pipe(
+            tap(data => {
+                console.log('Données reçues du serveur:', data);
+                this.faceSnaps = data;
+            })
+        );
+    }
+
+    getFaceSnapById(faceSnapId: number): Observable<FaceSnap> {
+        return this.http.get<FaceSnap>(`http://localhost:3000/facesnaps/${faceSnapId}`);
     }
 
     snapFaceSnapById(faceSnapId: string, snapType: SnapType): void {
-        const FaceSnap = this.getFaceSnapById(faceSnapId);
-        if (!FaceSnap) {
+        const faceSnap = this.faceSnaps.find(fs => fs.id === faceSnapId);
+        if (!faceSnap) {
             throw new Error('FaceSnap not found!');
         }
-        FaceSnap.snap(snapType);
-    }
-
-    getFaceSnapById(faceSnapId: string): FaceSnap {
-        const foundFaceSnap = this.faceSnaps.find(faceSnap => faceSnap.id === faceSnapId);
-        if (!foundFaceSnap) {
-            throw new Error('FaceSnap not found!');
-        }
-        return foundFaceSnap;
+        faceSnap.snap(snapType);
     }
 
     private isIdUnique(id: string): boolean {
