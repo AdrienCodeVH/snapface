@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { FaceSnap } from "../models/face-snap";
 import { SnapType } from "../models/snap-type.type";
 import { HttpClient } from "@angular/common/http";
-import { Observable, tap } from "rxjs";
+import { map, Observable, switchMap, tap } from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -26,40 +26,49 @@ export class FaceSnapsService {
         return this.http.get<FaceSnap>(`http://localhost:3000/facesnaps/${faceSnapId}`);
     }
 
-    snapFaceSnapById(faceSnapId: string, snapType: SnapType): void {
-        const faceSnap = this.faceSnaps.find(fs => fs.id === faceSnapId);
-        if (!faceSnap) {
-            throw new Error('FaceSnap not found!');
-        }
-        faceSnap.snap(snapType);
+    snapFaceSnapById(faceSnapId: number, snapType: SnapType): Observable<FaceSnap> {
+        return this.getFaceSnapById(faceSnapId).pipe(
+            map(faceSnap => ({
+                ...faceSnap,
+                snaps: faceSnap.snaps + (snapType === 'snap' ? 1 : -1)
+            })),
+            switchMap(updatedFaceSnap => this.http.put<FaceSnap>(`http://localhost:3000/facesnaps/${faceSnapId}`, updatedFaceSnap))
+        );
     }
 
-    private isIdUnique(id: string): boolean {
+    private isIdUnique(id: number): boolean {
         return !this.faceSnaps.some(faceSnap => faceSnap.id === id);
     }
 
-    addFaceSnap(formValue: { title: string, description: string, imageUrl: string, location?: string }): void {
-        let faceSnap: FaceSnap | undefined;
-        let isUnique = false;
-        
-        while (!isUnique) {
-            faceSnap = new FaceSnap(
-                formValue.title,
-                formValue.description,
-                new Date(),
-                0,
-                formValue.imageUrl
-            );
-            isUnique = this.isIdUnique(faceSnap.id);
-        }
+    private getMaxId(): Observable<number> {
+        return this.getAllFaceSnapsFromServer().pipe(
+            map(faceSnaps => {
+                if (faceSnaps.length === 0) return 0;
+                return Math.max(...faceSnaps.map(faceSnap => faceSnap.id));
+            })
+        );
+    }
 
-        if (!faceSnap) {
-            throw new Error('Impossible de créer un FaceSnap avec un ID unique');
-        }
-
-        if (formValue.location) {
-            faceSnap.withLocation(formValue.location);
-        }
-        this.faceSnaps.push(faceSnap);
+    addFaceSnap(formValue: { title: string, description: string, imageUrl: string, location?: string }): Observable<FaceSnap> {
+        return this.getMaxId().pipe(
+            map(maxId => {
+                const newFaceSnap = new FaceSnap(
+                    formValue.title,
+                    formValue.description,
+                    new Date(),
+                    0,
+                    formValue.imageUrl
+                );
+                newFaceSnap.id = maxId + 1;
+                
+                if (formValue.location) {
+                    newFaceSnap.withLocation(formValue.location);
+                }
+                return newFaceSnap;
+            }),
+            switchMap(newFaceSnap => 
+                this.http.post<FaceSnap>('http://localhost:3000/facesnaps', newFaceSnap)
+            )
+        );
     }
 }

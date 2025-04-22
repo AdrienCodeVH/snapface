@@ -2,7 +2,7 @@ import { SnapType } from "./snap-type.type";
 
 export class FaceSnap {
     location?: string;
-    id: string;
+    id: number;
     constructor(
         public title: string,
         public description: string,
@@ -10,7 +10,7 @@ export class FaceSnap {
         public snaps: number,
         public imageUrl: string
     ) {
-        this.id = crypto.randomUUID().substring(0, 8);
+        this.id = Math.random();
     }
 
     snap(snapType: SnapType): void {

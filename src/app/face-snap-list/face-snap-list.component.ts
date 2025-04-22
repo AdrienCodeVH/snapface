@@ -3,12 +3,12 @@ import { FaceSnap } from '../models/face-snap';
 import { FaceSnapComponent } from "../face-snap/face-snap.component";
 import { FaceSnapsService } from '../services/face-snaps.service';
 import { Observable, Subject, takeUntil, tap } from 'rxjs';
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-face-snap-list',
   standalone: true,
-  imports: [FaceSnapComponent, AsyncPipe, NgFor, NgIf],
+  imports: [FaceSnapComponent, AsyncPipe, NgFor],
   templateUrl: './face-snap-list.component.html',
   styleUrl: './face-snap-list.component.scss'
 })

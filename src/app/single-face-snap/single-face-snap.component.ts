@@ -25,14 +25,22 @@ export class SingleFaceSnapComponent implements OnInit {
     this.getFaceSnap();
   }
 
-  onAddSnap(): void {
-   // if (this.snaped) {
-    //  this.faceSnapsService.snapFaceSnapById(this.route.snapshot.params['id'], 'unsnap');
-    //} else {
-      //this.faceSnapsService.snapFaceSnapById(this.route.snapshot.params['id'], 'snap');
-    //}
-    //this.snaped = !this.snaped;
-    //this.snapButtonText = this.snaped ? 'Oops, unSnap!' : 'Oh Snap!';
+  onAddSnap(faceSnapId: number): void {
+   if (this.snaped) {
+    this.faceSnap$ = this.faceSnapsService.snapFaceSnapById(faceSnapId, 'unsnap').pipe(
+      tap(() => {
+        this.snaped = !this.snaped;
+        this.snapButtonText = this.snaped ? 'Oops, unSnap!' : 'Oh Snap!';
+      } )
+    );
+    } else {
+      this.faceSnap$ = this.faceSnapsService.snapFaceSnapById(faceSnapId, 'snap').pipe(
+        tap(() => {
+          this.snaped = !this.snaped;
+          this.snapButtonText = this.snaped ? 'Oops, unSnap!' : 'Oh Snap!';
+        } )
+      );
+    }
   }
 
   private getFaceSnap() {
