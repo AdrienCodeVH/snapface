@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
-import { FaceSnap } from '../models/face-snap';
+import { FaceSnap } from '../../../core/models/face-snap';
 import { Router } from '@angular/router';
 
 @Component({
