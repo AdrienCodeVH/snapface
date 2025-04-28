@@ -6,6 +6,10 @@ export const routes: Routes = [
     { 
         path: 'facesnaps',
         loadChildren: () => import('./face-snaps/face-snaps.routes').then(m => m.routes)
+    },
+    {
+        path: 'auth',
+        loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
     }
 ];
 

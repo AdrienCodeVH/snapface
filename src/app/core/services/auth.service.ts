@@ -4,11 +4,19 @@ import { Injectable } from "@angular/core";
   providedIn: 'root'
 })
 export class AuthService {
-  private token = 'MyToken';
+  private token: string | null = null;
 
   constructor() {}
 
-  getToken() {
+  getToken(): string | null {
     return this.token;
+  }
+
+  login(): void {
+    this.token = 'MyToken';
+  }
+
+  isLoggedIn(): boolean {
+    return this.token !== null;
   }
 }
